@@ -124,6 +124,10 @@ app.get(
   DistributedLoadController.createCurrentSemesters,
   DistributedLoadController.getDistributedLoad,
 )
+app.get(
+  '/distributed-semester-load/:sortType/:selectedSemester/:id',
+  DistributedLoadController.getDistributedLoadBySemester,
+)
 app.get('/distributed-load/teacher/:currentShowedYear/:teacher', DistributedLoadController.getDistributedTeacherLoad)
 app.patch(
   '/distributed-load',

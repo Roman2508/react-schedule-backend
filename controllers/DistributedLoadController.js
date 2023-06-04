@@ -8,6 +8,7 @@ import GroupSchema from '../models/GroupSchema.js'
 import InstitutionsSettingsSchema from '../models/InstitutionsSettingsSchema.js'
 import UserSettingsSchema from '../models/UserSettingsSchema.js'
 import LessonsSchema from '../models/LessonsSchema.js'
+import { useGetDistributedTeacherLoad } from '../utils/useGetDistributedTeacherLoad.js'
 // import isEqual from 'lodash.isequal'
 
 export const subjectTypes = [
@@ -92,25 +93,6 @@ export const getDistributedLoad = async (req, res) => {
         .exec()
     }
 
-    // const firstSemesterSubjects = await DistributedLoadSubjects.find({
-    //   groupId: req.params.id,
-    //   semester: req.currentSemesters.first,
-    // })
-    //   .populate(populate)
-    //   .exec()
-
-    // const secondSemesterSubjects = await DistributedLoadSubjects.find({
-    //   groupId: req.params.id,
-    //   semester: req.currentSemesters.second,
-    // })
-    //   .populate(populate)
-    //   .exec()
-
-    // res.json({
-    //   ...distributedLoad._doc,
-    //   load: [...firstSemesterSubjects, ...secondSemesterSubjects],
-    // })
-
     res.json({
       ...distributedLoad._doc,
       load: semesterSubjects,
@@ -123,49 +105,51 @@ export const getDistributedLoad = async (req, res) => {
   }
 }
 
-// export const createCurrentSemesters2 = async (req, res, next) => {
-//   try {
-//     const currentGroup = await GroupSchema.findById(req.params.id)
-//     const settings = await InstitutionsSettingsSchema.findOne({ institutionId: currentGroup._doc.institutionId })
+export const getDistributedLoadBySemester = async (req, res) => {
+  try {
+    const { sortType, selectedSemester, id } = req.params
 
-//     const yearOfAdmission = currentGroup._doc.yearOfAdmission
-//     const currentShowedYear = settings._doc.currentShowedYear
+    // if (sortType === 'teacher') {
+    //   const distributedSemesterLoad = await DistributedLoadSubjects.find({
+    //     semester: selectedSemester,
+    //   })
 
-//     const currentSemesters = {
-//       first: 0,
-//       second: 0,
-//     }
+    //   const teacher = await TeachersSchema.findById(req.params.teacher)
 
-//     const showedSemesters = Number(currentShowedYear) - Number(yearOfAdmission)
+    //   // Отримую ід на назви груп
+    //   const groupList = []
 
-//     if (showedSemesters === 0) {
-//       currentSemesters.first = 1
-//       currentSemesters.second = 2
-//     }
+    //   await Promise.all(
+    //     distributedSemesterLoad.map(async (el) => {
+    //       const group = await GroupSchema.findById(el.groupId)
+    //       groupList.push({ _id: group._id, name: group.name })
+    //     }),
+    //   )
 
-//     if (showedSemesters === 1) {
-//       currentSemesters.first = 3
-//       currentSemesters.second = 4
-//     }
+    //   const { distributedTeacherLoad } = useGetDistributedTeacherLoad(distributedSemesterLoad, groupList, teacher, id)
 
-//     if (showedSemesters === 2) {
-//       currentSemesters.first = 5
-//       currentSemesters.second = 6
-//     }
+    //   const filtredDistributedTeacherLoad = distributedTeacherLoad.filter((el) => el !== undefined)
 
-//     if (showedSemesters === 3) {
-//       currentSemesters.first = 7
-//       currentSemesters.second = 8
-//     }
+    //   // console.log(filtredDistributedTeacherLoad)
 
-//     req.currentSemesters = currentSemesters
+    //   res.json(filtredDistributedTeacherLoad)
+    // }
 
-//     next()
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ message: 'Помилка :(' })
-//   }
-// }
+    if (sortType === 'group') {
+      const distributedSemesterLoad = await DistributedLoadSubjects.find({
+        semester: selectedSemester,
+        groupId: id,
+      })
+        .populate(populate)
+        .exec()
+
+      res.json(distributedSemesterLoad)
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: 'Помилка при отриманні навантаження' })
+  }
+}
 
 export const createCurrentSemesters = async (req, res, next) => {
   try {
@@ -790,48 +774,55 @@ export const getDistributedTeacherLoad = async (req, res) => {
       }),
     )
 
-    const distributedTeacherLoad = distributedSemesterLoad.map((el) => {
-      const currentGroup = groupList.find((g) => {
-        return String(g._id) === String(el.groupId)
-      })
+    // const distributedTeacherLoad = distributedSemesterLoad.map((el) => {
+    //   const currentGroup = groupList.find((g) => {
+    //     return String(g._id) === String(el.groupId)
+    //   })
 
-      const data = {
-        _id: el._id,
-        groupName: currentGroup.name,
-        groupId: el.groupId,
-        name: el.name,
-        semester: el.semester,
-      }
+    //   const data = {
+    //     _id: el._id,
+    //     groupName: currentGroup.name,
+    //     groupId: el.groupId,
+    //     name: el.name,
+    //     semester: el.semester,
+    //   }
 
-      // Додавання до об'єкта data виду заняття, в якому даний викладач закріплений
-      subjectTypes.forEach((type) => {
-        if (el[type] && String(el[type].teacher) === req.params.teacher) {
-          data[type] = el[type]
+    //   // Додавання до об'єкта data виду заняття, в якому даний викладач закріплений
+    //   subjectTypes.forEach((type) => {
+    //     if (el[type] && String(el[type].teacher) === req.params.teacher) {
+    //       data[type] = el[type]
 
-          data[type].teacher = teacher
-        }
-      })
+    //       data[type].teacher = teacher
+    //     }
+    //   })
 
-      const dataKeys = Object.keys(data)
+    //   const dataKeys = Object.keys(data)
 
-      // Перевірка чи хоча б 1 вид занять був знайдений
-      const isIncludesSubject = dataKeys.map((el) => {
-        return subjectTypes.some((type) => {
-          return type === el
-        })
-      })
+    //   // Перевірка чи хоча б 1 вид занять був знайдений
+    //   const isIncludesSubject = dataKeys.map((el) => {
+    //     return subjectTypes.some((type) => {
+    //       return type === el
+    //     })
+    //   })
 
-      const some = isIncludesSubject.some((el) => el === true)
+    //   const some = isIncludesSubject.some((el) => el === true)
 
-      if (some) {
-        return data
-      }
+    //   if (some) {
+    //     return data
+    //   }
 
-      return
-    })
+    //   return
+    // })
+
+    const { distributedTeacherLoad } = useGetDistributedTeacherLoad(
+      distributedSemesterLoad,
+      groupList,
+      teacher,
+      req.params.teacher,
+    )
 
     const filtredDistributedTeacherLoad = distributedTeacherLoad.filter((el) => el !== undefined)
-    
+
     console.log(filtredDistributedTeacherLoad)
 
     res.json(filtredDistributedTeacherLoad)
