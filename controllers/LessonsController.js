@@ -291,6 +291,7 @@ export const createSeveralLessons = async (req, res) => {
               hours: el.hours,
               stream: el.stream,
               userId: el.userId,
+              students: el.students,
               institutionId: el.institutionId,
             })
 
