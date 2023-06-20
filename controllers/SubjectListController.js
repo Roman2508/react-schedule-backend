@@ -37,7 +37,7 @@ export const createNewSubject = async (req, res) => {
           await GroupLoadSchema.updateOne({ _id: el._id }, { $push: { load: groupLoadSubjectDoc._id } })
 
           await groupLoadSubjectDoc.save()
-        }),
+        })
       )
     }
 
@@ -60,6 +60,7 @@ export const updateSubjectHours = async (req, res) => {
       semesterNumber = Object.keys(req.body)[0]
 
       const semesterHours = {
+        departmentId: req.body[semesterNumber].departmentId, // ????
         lectures: req.body[semesterNumber].lectures < 0 ? 0 : req.body[semesterNumber].lectures,
         practical: req.body[semesterNumber].practical < 0 ? 0 : req.body[semesterNumber].practical,
         laboratory: req.body[semesterNumber].laboratory < 0 ? 0 : req.body[semesterNumber].laboratory,
@@ -90,7 +91,7 @@ export const updateSubjectHours = async (req, res) => {
 
       await GroupLoadSubjectSchema.updateMany(
         { name: findedSubject.name, planId: findedSubject.planId },
-        { totalHour: findedSubject.totalHour, [semesterNumber]: findedSubject[semesterNumber] },
+        { totalHour: findedSubject.totalHour, [semesterNumber]: findedSubject[semesterNumber] }
       )
     } else {
       res.status(404).json({
@@ -174,7 +175,7 @@ export const removeSubject = async (req, res) => {
 
             await GroupLoadSchema.updateOne({ _id: el._id }, { load: items })
           })
-        }),
+        })
       )
     }
   } catch (error) {
@@ -210,7 +211,7 @@ export const removeSemester = async (req, res) => {
 
         await GroupLoadSubjectSchema.updateMany(
           { name: subject.name, planId: subject.planId },
-          { [req.body.payload]: null, totalHour: totalHour },
+          { [req.body.payload]: null, totalHour: totalHour }
         )
       }
     }

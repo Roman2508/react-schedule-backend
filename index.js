@@ -1,6 +1,7 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
+import 'dotenv/config'
 
 import * as EducationPlanController from './controllers/EducationPlanController.js'
 import * as SubjectListController from './controllers/SubjectListController.js'
@@ -29,7 +30,7 @@ import { loginUserValidation, registerInstitutionValidation } from './validation
 /* // validators */
 
 mongoose
-  .connect('mongodb+srv://admin:wwwwww@cluster0.cx5doca.mongodb.net/react-schedule?retryWrites=true&w=majority')
+  .connect(process.env.MONGODB_CONNECT_URL)
   .then(() => console.log('DB OK'))
   .catch((err) => console.log('DB error', err))
 
@@ -43,7 +44,7 @@ app.post('/educationPlansGroup', educationPlanGroupCreateValidation, EducationPl
 app.patch(
   '/educationPlansGroup/:id',
   educationPlanGroupCreateValidation,
-  EducationPlanController.updateEducationPlansGroup,
+  EducationPlanController.updateEducationPlansGroup
 )
 app.delete('/educationPlansGroup/:id', EducationPlanController.removeEducationPlansGroup)
 
@@ -122,17 +123,17 @@ app.get('/group-load/:id', GroupLoadController.getGroupLoad)
 app.get(
   '/distributed-load/:userId/:id',
   DistributedLoadController.createCurrentSemesters,
-  DistributedLoadController.getDistributedLoad,
+  DistributedLoadController.getDistributedLoad
 )
 app.get(
   '/distributed-semester-load/:sortType/:selectedSemester/:id',
-  DistributedLoadController.getDistributedLoadBySemester,
+  DistributedLoadController.getDistributedLoadBySemester
 )
 app.get('/distributed-load/teacher/:currentShowedYear/:teacher', DistributedLoadController.getDistributedTeacherLoad)
 app.patch(
   '/distributed-load',
   DistributedLoadController.createCurrentSemesters,
-  DistributedLoadController.updateDistributedLoad,
+  DistributedLoadController.updateDistributedLoad
 )
 app.patch('/distributed-load/attach-teacher/:id', DistributedLoadController.attachTeacher)
 app.patch('/distributed-load/students-count/:id', DistributedLoadController.updateStudentsCount)
@@ -160,7 +161,7 @@ app.patch('/user/semester/:userId', UserController.updateSelectedSemester)
 // app.post('/groupLoad', GroupLoadController.createGroupLoad)
 // app.patch('/groupLoad/:id', GroupLoadController.updateGroupLoad)
 
-app.listen(4444, (err) => {
+app.listen(process.env.PORT || 4444, (err) => {
   if (err) {
     console.log(err)
   }
