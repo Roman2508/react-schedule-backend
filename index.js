@@ -135,6 +135,10 @@ app.patch(
   DistributedLoadController.createCurrentSemesters,
   DistributedLoadController.updateDistributedLoad
 )
+app.get(
+  '/distributed-load/department/:currentShowedYear/:department',
+  DistributedLoadController.getDistributedDepartmentLoad
+)
 app.patch('/distributed-load/attach-teacher/:id', DistributedLoadController.attachTeacher)
 app.patch('/distributed-load/students-count/:id', DistributedLoadController.updateStudentsCount)
 
