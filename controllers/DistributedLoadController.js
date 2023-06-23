@@ -834,19 +834,6 @@ export const getDistributedTeacherLoad = async (req, res) => {
   }
 }
 
-export const getDistributedDepartmentLoad = async (req, res) => {
-  try {
-    const departmentLoad = await DistributedLoadSubjects.find({
-      currentShowedYear: req.params.currentShowedYear,
-      department: req.params.department,
-    })
-
-    res.json(departmentLoad)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 export const attachTeacher = async (req, res) => {
   try {
     Promise.all(

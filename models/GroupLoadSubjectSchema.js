@@ -55,6 +55,11 @@ const GroupLoadSubjectSchema = new mongoose.Schema(
       type: String,
       required: true,
     }, */
+    departmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Department',
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -136,7 +141,7 @@ const GroupLoadSubjectSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default mongoose.model('GroupLoadSubjects', GroupLoadSubjectSchema)

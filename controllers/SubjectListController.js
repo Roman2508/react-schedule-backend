@@ -9,6 +9,7 @@ export const createNewSubject = async (req, res) => {
       name: req.body.name,
       planId: req.body.planId,
       institutionId: req.body.institutionId,
+      departmentId: req.body.departmentId,
       totalHour: 0,
     })
 
@@ -60,7 +61,7 @@ export const updateSubjectHours = async (req, res) => {
       semesterNumber = Object.keys(req.body)[0]
 
       const semesterHours = {
-        departmentId: req.body[semesterNumber].departmentId, // ????
+        // departmentId: req.body[semesterNumber].departmentId,
         lectures: req.body[semesterNumber].lectures < 0 ? 0 : req.body[semesterNumber].lectures,
         practical: req.body[semesterNumber].practical < 0 ? 0 : req.body[semesterNumber].practical,
         laboratory: req.body[semesterNumber].laboratory < 0 ? 0 : req.body[semesterNumber].laboratory,
@@ -108,14 +109,20 @@ export const updateSubjectHours = async (req, res) => {
     })
   }
 }
-export const updateSubjectName = async (req, res) => {
+export const updateSubjectNameAndDepartment = async (req, res) => {
   try {
     const subject = await SubjectsListModel.findOne({ _id: req.params.id })
 
     if (subject) {
-      await SubjectsListModel.updateOne({ _id: req.params.id }, { name: req.body.name })
+      await SubjectsListModel.updateOne(
+        { _id: req.params.id },
+        { name: req.body.name, departmentId: req.body.departmentId }
+      )
 
-      await GroupLoadSubjectSchema.updateMany({ name: subject.name, planId: subject.planId }, { name: req.body.name })
+      await GroupLoadSubjectSchema.updateMany(
+        { name: subject.name, planId: subject.planId },
+        { name: req.body.name, departmentId: req.body.departmentId }
+      )
 
       return res.json({
         id: req.params.id,

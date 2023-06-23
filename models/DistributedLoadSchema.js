@@ -69,6 +69,11 @@ const DistributedLoadSubjectsSchema = new mongoose.Schema({
     ref: 'Institutions',
     required: true,
   },
+  // departmentId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Department',
+  //   required: true,
+  // },
   currentShowedYear: {
     type: String,
     required: true,

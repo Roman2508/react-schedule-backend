@@ -3,6 +3,7 @@ import DepartmentsSchema from '../models/DepartmentsSchema.js'
 export const getAllDepartments = async (req, res) => {
   try {
     const departments = await DepartmentsSchema.find({ institutionId: req.params.institutionId })
+      .sort({ departmentNumber: 'asc' })
       .populate('teachers')
       .exec()
 
@@ -41,7 +42,7 @@ export const updateDepartment = async (req, res) => {
       {
         name: req.body.name,
         departmentNumber: req.body.departmentNumber,
-      },
+      }
     )
 
     const newDepartment = await DepartmentsSchema.findById(req.params.id)

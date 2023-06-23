@@ -1,11 +1,6 @@
 import mongoose from 'mongoose'
 
 export const SubjectSchema = new mongoose.Schema({
-  departmentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Department',
-    // required: true,
-  },
   lectures: {
     type: Number,
     required: true,
@@ -49,6 +44,11 @@ const SubjectsSchema = new mongoose.Schema(
     planId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'EducationPlan',
+      required: true,
+    },
+    departmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Department',
       required: true,
     },
     name: {

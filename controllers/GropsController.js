@@ -26,6 +26,19 @@ export const getGroups = async (req, res) => {
   }
 }
 
+export const getGroupLoadByDepartment = async (req, res) => {
+  try {
+    const departmentLoad = await GroupLoadSubjectSchema.find({
+      // currentShowedYear: req.params.currentShowedYear,
+      department: req.params.department,
+    })
+
+    res.json(departmentLoad)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const getAllFacultyGroups = async (req, res) => {
   try {
     const specialties = await SpecialtySchema.find({ facultieId: req.params.facultieId })
@@ -41,7 +54,7 @@ export const getAllFacultyGroups = async (req, res) => {
         if (group.length > 0) {
           groupsList = [...groupsList, ...group]
         }
-      }),
+      })
     )
 
     res.json(groupsList)
@@ -125,7 +138,7 @@ export const createGroup = async (req, res) => {
           loadDoc.isNew = true
           await loadDoc.save()
         }
-      }),
+      })
     )
     /* оновлення групи актуальним навантаженням  */
 
@@ -133,7 +146,7 @@ export const createGroup = async (req, res) => {
       { _id: doc._id },
       {
         groupLoad,
-      },
+      }
     )
 
     /* оновлення масиву навантаження   */
@@ -145,7 +158,7 @@ export const createGroup = async (req, res) => {
       { groupId: doc._id },
       {
         load: groupsIdArray,
-      },
+      }
     )
 
     /* повернення об'єкту групи разом з загальним навантаженням на фронтенд */
@@ -238,7 +251,7 @@ export const updateGroupInfo = async (req, res) => {
         courseNumber: req.body.courseNumber,
         students: req.body.students,
         formOfEducations: req.body.formOfEducations,
-      },
+      }
     )
 
     // Оновлюю ім'я групи в потоці
@@ -259,10 +272,10 @@ export const updateGroupInfo = async (req, res) => {
             { _id: el },
             {
               components: updatedStreamComponent,
-            },
+            }
           )
         }
-      }),
+      })
     )
 
     // Онолюю кількість студентів
@@ -319,7 +332,7 @@ export const updateGroupInfo = async (req, res) => {
                     },
                     {
                       students: req.body.students,
-                    },
+                    }
                   )
 
                   // Оновлюю к-ть студентів в виставлених дисциплінах 2 семестру
@@ -332,18 +345,16 @@ export const updateGroupInfo = async (req, res) => {
                     },
                     {
                       students: req.body.students,
-                    },
+                    }
                   )
 
-                  //
-                  //
                   //
                 }
               }
             })
           })
         }
-      }),
+      })
     )
 
     const newGroup = await GroupSchema.findById(req.params.id)
@@ -392,7 +403,7 @@ export const updateGroupLoad = async (req, res) => {
               subjectIdList.push(doc._id)
               await doc.save()
             }
-          }),
+          })
         )
 
         await GroupLoadSchema.updateOne(
@@ -400,7 +411,7 @@ export const updateGroupLoad = async (req, res) => {
           {
             planId: req.body.planId,
             load: subjectIdList,
-          },
+          }
         )
       } else {
         console.log(`req.body.load довжина масиву === 0 або дані передано не коректно`)
@@ -413,7 +424,7 @@ export const updateGroupLoad = async (req, res) => {
         {
           EducationPlanId: req.body.planId,
           groupLoad: finalGroulLoad._id,
-        },
+        }
       )
 
       res.json(finalGroulLoad)
@@ -436,7 +447,7 @@ export const addGroupSpecialization = async (req, res) => {
     { _id: req.params.id },
     {
       specializationsList: [...group.specializationsList, { name: req.body.name }],
-    },
+    }
   )
 
   const newGroup = await GroupSchema.findById(req.params.id)
@@ -470,7 +481,7 @@ export const updateGroupSpecialization = async (req, res) => {
         { _id: req.params.id },
         {
           specializationsList: newSpecialization,
-        },
+        }
       )
     }
 
@@ -496,7 +507,7 @@ export const removeGroupSpecialization = async (req, res) => {
         { _id: req.params.id },
         {
           specializationsList: newSpecialization,
-        },
+        }
       )
     }
 
@@ -579,7 +590,7 @@ export const removeSpecializationSubject = async (req, res) => {
         { _id: req.params.groupId },
         {
           specializationsSubjects: newSpecializationSubject,
-        },
+        }
       )
     }
 
@@ -600,7 +611,7 @@ export const updateSpecializationSubjects = async (req, res) => {
     { _id: req.params.id },
     {
       specialization: req.body,
-    },
+    }
   )
 
   res.json({
@@ -650,7 +661,7 @@ export const addSubgroups = async (req, res) => {
           { _id: req.params.id },
           {
             subgroups: [...group.subgroups, doc._id],
-          },
+          }
         )
       }
 
@@ -670,7 +681,7 @@ export const addSubgroups = async (req, res) => {
           const subgroupItem = await doc.save()
 
           subgroups.push(subgroupItem)
-        }),
+        })
       )
 
       if (group) {
@@ -678,7 +689,7 @@ export const addSubgroups = async (req, res) => {
           { _id: req.params.id },
           {
             subgroups: [...group.subgroups, ...subgroups],
-          },
+          }
         )
       }
 
@@ -704,7 +715,7 @@ export const removeSubgroups = async (req, res) => {
         { _id: req.params.id },
         {
           subgroups: newSubgroups,
-        },
+        }
       )
     } else {
       return
@@ -739,7 +750,7 @@ export const updateSubgroups = async (req, res) => {
         { _id: req.body[0]._id },
         {
           ...req.body[0],
-        },
+        }
       )
 
       const subgroup = await SubgroupsSchema.findById(req.body[0]._id)
@@ -752,9 +763,9 @@ export const updateSubgroups = async (req, res) => {
             { _id: el._id },
             {
               ...el,
-            },
+            }
           )
-        }),
+        })
       )
 
       let subgroups = []
@@ -763,7 +774,7 @@ export const updateSubgroups = async (req, res) => {
         req.body.map(async (el) => {
           const item = await SubgroupsSchema.findById(el._id)
           subgroups.push(item)
-        }),
+        })
       )
 
       res.json(subgroups)

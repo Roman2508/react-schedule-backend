@@ -57,7 +57,7 @@ app.post('/subjectsList', SubjectListController.createNewSubject)
 app.patch('/subjectsList/:id', SubjectListController.updateSubjectHours)
 app.delete('/subjectsList/:id', SubjectListController.removeSubject)
 app.patch('/subjectsList/:id/semester', SubjectListController.removeSemester)
-app.patch('/subjectsList/:id/name', SubjectListController.updateSubjectName)
+app.patch('/subjectsList/name-and-department/:id', SubjectListController.updateSubjectNameAndDepartment)
 
 app.get('/departments/:institutionId', DepartmentsController.getAllDepartments)
 app.post('/departments', DepartmentsController.createDepartment)
@@ -94,6 +94,7 @@ app.post('/groups', GroupsController.createGroup)
 app.delete('/groups/:id', GroupsController.removeGroup)
 app.patch('/groups/info/:id', GroupsController.updateGroupInfo)
 app.patch('/groups/load/:id', GroupsController.updateGroupLoad)
+app.get('/groups/load/:currentShowedYear/:department', GroupsController.getGroupLoadByDepartment)
 
 app.post('/groups/specialization-list/:id', GroupsController.addGroupSpecialization)
 app.patch('/groups/specialization-list/:id', GroupsController.updateGroupSpecialization)
@@ -120,6 +121,7 @@ app.post('/streams/components/:id', StreamsController.createStreamComponent)
 app.delete('/streams/components/:streamId/:id', StreamsController.removeStreamComponent)
 
 app.get('/group-load/:id', GroupLoadController.getGroupLoad)
+
 app.get(
   '/distributed-load/:userId/:id',
   DistributedLoadController.createCurrentSemesters,
@@ -134,10 +136,6 @@ app.patch(
   '/distributed-load',
   DistributedLoadController.createCurrentSemesters,
   DistributedLoadController.updateDistributedLoad
-)
-app.get(
-  '/distributed-load/department/:currentShowedYear/:department',
-  DistributedLoadController.getDistributedDepartmentLoad
 )
 app.patch('/distributed-load/attach-teacher/:id', DistributedLoadController.attachTeacher)
 app.patch('/distributed-load/students-count/:id', DistributedLoadController.updateStudentsCount)
